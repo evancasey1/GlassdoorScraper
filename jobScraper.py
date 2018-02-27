@@ -2,10 +2,8 @@
 
 from selenium import webdriver
 from time import sleep
-import pandas as pd
 from selenium.common.exceptions import NoSuchElementException
 from random import uniform, randrange
-import numpy as np
 import string
 
 PATH = "/Users/EvanCasey/Documents/Development/Drivers/"
