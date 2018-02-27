@@ -9,17 +9,21 @@ import string
 PATH = "/Users/EvanCasey/Documents/Development/Drivers/"
 filename = "jobDescriptions.txt"
 
-languages = {"c++":0, 
-            "c":0,
-            "python":0,
-            "javascript":0,
-            "java":0,
-            "ruby":0,
-            "c#":0,
-            "sql":0,
-            "php":0,
-            "html":0,
-            "css":0}
+
+#keys must be lowercase
+keyword_dict = {"c++":0, 
+                "c":0,
+                "python":0,
+                "javascript":0,
+                "java":0,
+                "ruby":0,
+                "c#":0,
+                "sql":0,
+                "php":0,
+                "html":0,
+                "css":0}
+
+#keyword_dict = {"master":0, "bachelor":0, "phd":0, "bs":0, "ms":0}
 
 #Handles creation of browser
 def initBrowser():
@@ -42,7 +46,7 @@ def rand_wait():
 
 #searches jobs on 'keyword' at 'location' and returns the amount of jobs that it found
 def searchJobs(keyword, location, browser):
-    nPages = 1 #number of pages to search before quitting
+    nPages = 2 #number of pages to search before quitting
     jobCount = 0
     
     browser.find_element_by_id('KeywordSearch').clear()
@@ -89,7 +93,7 @@ def searchJobs(keyword, location, browser):
     print("Write complete.")
     return jobCount
 
-#scans the text for the keywords specified in languages
+#scans the text for the keywords specified in keyword_dict
 def parseData():
     print("Parsing...")
     infile = open(filename, "r")
@@ -100,8 +104,8 @@ def parseData():
         line = line.translate(None, exclude) #removes punctuation
         for word in line.split():
             word = ''.join(filter(lambda c: c in string.printable, word)).lower()
-            if word in languages:
-                languages[word] += 1
+            if word in keyword_dict:
+                keyword_dict[word] += 1
 
     infile.close()
     print("Parse complete.")
@@ -112,8 +116,8 @@ def parseData():
 #   Fix output to be more visually appealing
 def displayStats(nJobs):
     print("\nNumber of Times Language Appeared:")
-    for key in languages:
-        print key.upper() + ": " + str(languages[key]) + " - " + str(round(float(languages[key])/float(nJobs) * 100.0, 2)) + "%"
+    for key in keyword_dict:
+        print key.upper() + ": " + str(keyword_dict[key]) + " - " + str(round(float(keyword_dict[key])/float(nJobs) * 100.0, 2)) + "%"
     print "Total Jobs Found: " + str(nJobs) + "\n"
 
 #Drives the program. Provides logical control
