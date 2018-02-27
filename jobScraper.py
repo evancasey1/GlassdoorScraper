@@ -6,7 +6,7 @@ from selenium.common.exceptions import NoSuchElementException
 from random import uniform, randrange
 import string
 
-PATH = "/Users/EvanCasey/Documents/Development/Drivers/"
+PATH = "<path>"
 filename = "jobDescriptions.txt"
 
 languages = {"c++":0, 
@@ -39,7 +39,7 @@ def rand_wait():
     sleep(randrange(min_s, max_s))
 
 def searchJobs(keyword, location, browser):
-    nPages = 1
+    nPages = 3
     jobCount = 0
     
     browser.find_element_by_id('KeywordSearch').send_keys(keyword)
@@ -105,7 +105,6 @@ def beginGlassdoor(browser, url):
     keyword = 'software engineer'
     location = 'Raleigh, NC'
 
-    
     browser.get(url)
     browser.find_element_by_id('KeywordSearch').clear()
     browser.find_element_by_id('LocationSearch').clear()
