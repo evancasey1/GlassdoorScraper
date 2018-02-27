@@ -2,11 +2,10 @@
 
 from selenium import webdriver
 from time import sleep
-from selenium.common.exceptions import NoSuchElementException
-from random import uniform, randrange
+from random import uniform
 import string
 
-PATH = "/Users/EvanCasey/Documents/Development/Drivers/"
+PATH = "/<PATH>/chromedriver"
 filename = "jobDescriptions.txt"
 
 
@@ -27,7 +26,7 @@ keyword_dict = {"c++":0,
 
 #Handles creation of browser
 def initBrowser():
-    path_to_chromedriver = PATH + "chromedriver"
+    path_to_chromedriver = PATH
     
     options = webdriver.ChromeOptions()
     options.add_argument('--disable-extensions')
@@ -42,13 +41,15 @@ def initBrowser():
 def rand_wait():
     min_s = 2.0
     max_s = 6.0
-    sleep(randrange(min_s, max_s))
+    sleep(uniform(min_s, max_s))
 
 #searches jobs on 'keyword' at 'location' and returns the amount of jobs that it found
 def searchJobs(keyword, location, browser):
-    nPages = 2 #number of pages to search before quitting
+    nPages = 1 #number of pages to search before quitting
     jobCount = 0
     
+    #Clears the search boxes and populates them with the 
+    #keyword and location
     browser.find_element_by_id('KeywordSearch').clear()
     browser.find_element_by_id('LocationSearch').clear()
     rand_wait()
@@ -115,7 +116,7 @@ def parseData():
 #   Provide graphs and other (more meaningful) statistics
 #   Fix output to be more visually appealing
 def displayStats(nJobs):
-    print("\nNumber of Times Language Appeared:")
+    print("\nNumber of Times Keyword Appeared:")
     for key in keyword_dict:
         print key.upper() + ": " + str(keyword_dict[key]) + " - " + str(round(float(keyword_dict[key])/float(nJobs) * 100.0, 2)) + "%"
     print "Total Jobs Found: " + str(nJobs) + "\n"
