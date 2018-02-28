@@ -3,6 +3,7 @@
 from selenium import webdriver
 from time import sleep
 from random import uniform
+import operator
 import string
 
 PATH = "/<PATH>/chromedriver"
@@ -45,7 +46,7 @@ def rand_wait():
 
 #searches jobs on 'keyword' at 'location' and returns the amount of jobs that it found
 def searchJobs(keyword, location, browser):
-    nPages = 1 #number of pages to search before quitting
+    nPages = 2 #number of pages to search before quitting
     jobCount = 0
     
     #Clears the search boxes and populates them with the 
@@ -116,9 +117,14 @@ def parseData():
 #   Provide graphs and other (more meaningful) statistics
 #   Fix output to be more visually appealing
 def displayStats(nJobs):
+    #sorted list of tuples representing the keyword_dict [(key, value), ...]
+    sorted_values = sorted(keyword_dict.items(), key=operator.itemgetter(1))
+    sorted_values.reverse()
     print("\nNumber of Times Keyword Appeared:")
-    for key in keyword_dict:
-        print key.upper() + ": " + str(keyword_dict[key]) + " - " + str(round(float(keyword_dict[key])/float(nJobs) * 100.0, 2)) + "%"
+    for i in range(len(sorted_values)):
+        percentage = round((float(sorted_values[i][1]) / float(nJobs)) * 100, 2)
+        print sorted_values[i][0] + ": " + str(sorted_values[i][1]) + " - " + str(percentage) + "%"
+    
     print "Total Jobs Found: " + str(nJobs) + "\n"
 
 #Drives the program. Provides logical control
