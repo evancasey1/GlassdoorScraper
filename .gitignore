@@ -1,1 +1,5 @@
 jobDescriptions.txt
+/env/*
+/plots/*
+env/
+plots/

@@ -3,7 +3,9 @@
 from selenium import webdriver
 from time import sleep
 from random import uniform
+from ggplot import *
 import matplotlib.pyplot as plt
+import pandas as pd
 import operator
 import string
 
@@ -128,11 +130,15 @@ def displayStats(nJobs):
     
     print "Total Jobs Found: " + str(nJobs) + "\n"
 
-    plt.bar(range(len(keyword_dict)), list(keyword_dict.values()), align='center')
-    plt.xticks(range(len(keyword_dict)), list(keyword_dict.keys()))
-    plt.ylabel("# Occurences")
-    plt.xlabel("Keywords")
+    df = pd.DataFrame({'Keyword': keyword_dict.keys(), 'Occurences': keyword_dict.values()})
+    '''
+    print(df['Occurences'])
+    p = ggplot(df, aes(x='Keyword')) + geom_bar()
+    p.save('plots/plot.png')
+
+    df.plot(kind='bar')
     plt.show()
+    '''
 
 #Drives the program. Provides logical control
 def main():
@@ -140,10 +146,10 @@ def main():
     keyword = 'software engineer'
     location = 'Raleigh, NC'
 
-    #browser = initBrowser()
-    #browser.get(url)
+    browser = initBrowser()
+    browser.get(url)
 
-    #nJobs = searchJobs(keyword, location, browser)
+    nJobs = searchJobs(keyword, location, browser)
     nJobs = 60
     parseData()
     displayStats(nJobs)
