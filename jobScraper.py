@@ -3,9 +3,9 @@
 from selenium import webdriver
 from time import sleep
 from random import uniform
-from ggplot import *
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 import operator
 import string
 
@@ -138,15 +138,12 @@ def displayStats(nJobs):
     
     print "Total Jobs Found: " + str(nJobs) + "\n"
 
-    #words = pd.factorize(df['keyword'])[1]
-    #df = pd.DataFrame({'keyword': keyword_dict.keys(), 'occurences': keyword_dict.values()})
-    #df = pd.DataFrame([keyword_dict])
-    #print df
-
-    df = getKeywordDF()
-    p = ggplot(df, aes(x='keyword', fill='factor(keyword)')) + geom_bar()
-    p.save('plots/plot.png')
-
+    #Seaborn bar chart
+    df = pd.DataFrame({'keyword': keyword_dict.keys(), 'occurences': keyword_dict.values()})
+    sns.set_style("whitegrid")
+    ax = sns.barplot(x='keyword', y='occurences', data=df)
+    fig = ax.get_figure()
+    fig.savefig('plots/plot.png')
     plt.show()
     
 
