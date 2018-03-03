@@ -138,8 +138,13 @@ def displayStats(nJobs):
     
     print "Total Jobs Found: " + str(nJobs) + "\n"
 
+    #words = pd.factorize(df['keyword'])[1]
+    #df = pd.DataFrame({'keyword': keyword_dict.keys(), 'occurences': keyword_dict.values()})
+    #df = pd.DataFrame([keyword_dict])
+    #print df
+
     df = getKeywordDF()
-    p = ggplot(df, aes(x='keyword')) + geom_bar(stat='count')
+    p = ggplot(df, aes(x='keyword', fill='factor(keyword)')) + geom_bar()
     p.save('plots/plot.png')
 
     plt.show()
