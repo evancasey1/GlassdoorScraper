@@ -115,6 +115,14 @@ def parseData():
     infile.close()
     print("Parse complete.")
 
+def getKeywordDF():
+    result = []
+    for key in keyword_dict:
+        for i in range(keyword_dict[key]):
+            result.append(key)
+
+    return pd.DataFrame({'keyword':result})
+
 #Provides analysis on the data. 
 #TODO:
 #   Provide graphs and other (more meaningful) statistics
@@ -130,15 +138,12 @@ def displayStats(nJobs):
     
     print "Total Jobs Found: " + str(nJobs) + "\n"
 
-    df = pd.DataFrame({'Keyword': keyword_dict.keys(), 'Occurences': keyword_dict.values()})
-    '''
-    print(df['Occurences'])
-    p = ggplot(df, aes(x='Keyword')) + geom_bar()
+    df = getKeywordDF()
+    p = ggplot(df, aes(x='keyword')) + geom_bar(stat='count')
     p.save('plots/plot.png')
 
-    df.plot(kind='bar')
     plt.show()
-    '''
+    
 
 #Drives the program. Provides logical control
 def main():
@@ -146,10 +151,10 @@ def main():
     keyword = 'software engineer'
     location = 'Raleigh, NC'
 
-    browser = initBrowser()
-    browser.get(url)
+    #browser = initBrowser()
+    #browser.get(url)
 
-    nJobs = searchJobs(keyword, location, browser)
+    #nJobs = searchJobs(keyword, location, browser)
     nJobs = 60
     parseData()
     displayStats(nJobs)
