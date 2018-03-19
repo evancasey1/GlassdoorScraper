@@ -49,7 +49,7 @@ def rand_wait():
 
 #searches jobs on 'keyword' at 'location' and returns the amount of jobs that it found
 def searchJobs(keyword, location, browser):
-    nPages = 35 #number of pages to search before quitting
+    nPages = 1 #number of pages to search before quitting
     jobCount = 0
     
     #Clears the search boxes and populates them with the 
@@ -140,6 +140,7 @@ def displayStats(nJobs):
 
     #Seaborn bar chart
     df = pd.DataFrame({'keyword': keyword_dict.keys(), 'occurences': keyword_dict.values()})
+    df = df.sort_values(by=['occurences'], ascending=False)
     sns.set_style("whitegrid")
     ax = sns.barplot(x='keyword', y='occurences', data=df)
     fig = ax.get_figure()
@@ -157,7 +158,7 @@ def main():
     browser.get(url)
 
     nJobs = searchJobs(keyword, location, browser)
-    #nJobs = 600
+    #nJobs = 1
     parseData()
     displayStats(nJobs)
 
