@@ -49,7 +49,7 @@ def rand_wait():
 
 #searches jobs on 'keyword' at 'location' and returns the amount of jobs that it found
 def searchJobs(keyword, location, browser):
-    nPages = 2 #number of pages to search before quitting
+    nPages = 35 #number of pages to search before quitting
     jobCount = 0
     
     #Clears the search boxes and populates them with the 
@@ -153,11 +153,11 @@ def main():
     keyword = 'software engineer'
     location = 'Raleigh, NC'
 
-    #browser = initBrowser()
-    #browser.get(url)
+    browser = initBrowser()
+    browser.get(url)
 
-    #nJobs = searchJobs(keyword, location, browser)
-    nJobs = 60
+    nJobs = searchJobs(keyword, location, browser)
+    #nJobs = 600
     parseData()
     displayStats(nJobs)
 
