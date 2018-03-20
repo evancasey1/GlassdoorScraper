@@ -30,15 +30,13 @@ keyword_dict = {"c++":0,
 
 #Handles creation of browser
 def initBrowser():
-    path_to_chromedriver = PATH
-    
     options = webdriver.ChromeOptions()
     options.add_argument('--disable-extensions')
     options.add_argument('--profile-directory=Default')
     options.add_argument('--disable-plugins-discovery')
     options.add_argument('--incognito')
 
-    browser = webdriver.Chrome(executable_path = path_to_chromedriver, chrome_options = options)
+    browser = webdriver.Chrome(executable_path = PATH, chrome_options = options)
     return browser
 
 #sleeps for a random period between min and max in order to stay undected
@@ -49,7 +47,7 @@ def rand_wait():
 
 #searches jobs on 'keyword' at 'location' and returns the amount of jobs that it found
 def searchJobs(keyword, location, browser):
-    nPages = 1 #number of pages to search before quitting
+    nPages = 30 #number of pages to search before quitting
     jobCount = 0
     
     #Clears the search boxes and populates them with the 
