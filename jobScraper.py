@@ -9,7 +9,7 @@ import seaborn as sns
 import operator
 import string
 
-PATH = "/Users/EvanCasey/Documents/Development/Drivers/chromedriver"
+PATH = "/<PATH>/chromedriver"
 filename = "jobDescriptions.txt"
 
 
@@ -172,11 +172,11 @@ def main():
     keyword = 'software engineer'
     location = 'Raleigh, NC'
 
-    #browser = initBrowser()
-    #browser.get(url)
+    browser = initBrowser()
+    browser.get(url)
 
-    #nJobs = searchJobs(keyword, location, browser)
-    nJobs = 30
+    nJobs = searchJobs(keyword, location, browser)
+    #nJobs = 30
     parseData()
     displayStats(nJobs)
 
