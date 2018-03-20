@@ -9,7 +9,7 @@ import seaborn as sns
 import operator
 import string
 
-PATH = "/<PATH>/chromedriver"
+PATH = "/Users/EvanCasey/Documents/Development/Drivers/chromedriver"
 filename = "jobDescriptions.txt"
 
 
@@ -66,8 +66,10 @@ def searchJobs(keyword, location, browser):
     base_url = browser.current_url
     jobDict = {}
     descList = []
+    exclude = string.punctuation.replace("+", "")
+    exclude = exclude.replace("#", "")
     
-    for i in range(nPages):
+    for i in range(0, nPages):
         try:
             rand_wait()
             jobPostings = browser.find_elements_by_class_name('jl') #get all job listings
@@ -82,7 +84,11 @@ def searchJobs(keyword, location, browser):
                 except:
                     pass
 
-                descList.append(browser.find_element_by_class_name("jobDescriptionContent").text)
+                #text gets the job description content, encoded to utf-8, and then with the characters in 'exclude' and '\n' removed
+                text = browser.find_element_by_class_name('jobDescriptionContent').text.encode('utf-8').translate(None, exclude).strip('\n')
+                
+                descList.append(text)
+                descList.append(',')
                 jobCount += 1
             
             browser.find_element_by_class_name('next').click()
@@ -90,6 +96,7 @@ def searchJobs(keyword, location, browser):
             print(e)
             pass
     
+    browser.quit()
     #write the description data into one file
     print("Writing...")
     outfile = open(filename, "wb")
@@ -101,16 +108,27 @@ def searchJobs(keyword, location, browser):
 #scans the text for the keywords specified in keyword_dict
 def parseData():
     print("Parsing...")
-    infile = open(filename, "r")
-    exclude = string.punctuation.replace("+", "")
-    exclude = exclude.replace("#", "")
+    infile = open(filename, 'r')
+    jobs = []
 
+    #Separates jobs on comma
+    fullstr = ""
     for line in infile:
-        line = line.translate(None, exclude) #removes punctuation
-        for word in line.split():
+        if ',' not in line:
+            fullstr += line
+        else:
+            fullstr += line[:-1]
+            jobs.append(fullstr)
+            fullstr = ""
+
+    #Iterates through and collects data on jobs
+    for job in jobs:
+        used_kws = []
+        for word in job.split():
             word = ''.join(filter(lambda c: c in string.printable, word)).lower()
-            if word in keyword_dict:
+            if word in keyword_dict and word not in used_kws:
                 keyword_dict[word] += 1
+                used_kws.append(word)
 
     infile.close()
     print("Parse complete.")
@@ -154,11 +172,11 @@ def main():
     keyword = 'software engineer'
     location = 'Raleigh, NC'
 
-    browser = initBrowser()
-    browser.get(url)
+    #browser = initBrowser()
+    #browser.get(url)
 
-    nJobs = searchJobs(keyword, location, browser)
-    #nJobs = 1
+    #nJobs = searchJobs(keyword, location, browser)
+    nJobs = 30
     parseData()
     displayStats(nJobs)
 
