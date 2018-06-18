@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from time import sleep
 from random import uniform
 import matplotlib.pyplot as plt
@@ -9,7 +13,7 @@ import seaborn as sns
 import operator
 import string
 
-PATH = "/<PATH>/chromedriver"
+PATH = "/Users/EvanCasey/Documents/Development/Drivers/chromedriver"
 filename = "jobDescriptions.txt"
 
 
@@ -49,6 +53,7 @@ def rand_wait():
 def searchJobs(keyword, location, browser):
     nPages = 30 #number of pages to search before quitting
     jobCount = 0
+    timeOut = 10
     
     #Clears the search boxes and populates them with the 
     #keyword and location
@@ -66,6 +71,7 @@ def searchJobs(keyword, location, browser):
     descList = []
     exclude = string.punctuation.replace("+", "")
     exclude = exclude.replace("#", "")
+    outfile = open(filename, "wb")
     
     for i in range(0, nPages):
         try:
@@ -73,6 +79,7 @@ def searchJobs(keyword, location, browser):
             jobPostings = browser.find_elements_by_class_name('jl') #get all job listings
             for job in jobPostings:
                 job.click() #click the job so that the job description info is available
+                rand_wait()
                 rand_wait()
 
                 #This try/except block exists to circumvent a popup Glassdoor shows
@@ -83,11 +90,17 @@ def searchJobs(keyword, location, browser):
                     pass
 
                 #text gets the job description content, encoded to utf-8, and then with the characters in 'exclude' and '\n' removed
-                text = browser.find_element_by_class_name('jobDescriptionContent').text.encode('utf-8').translate(None, exclude).strip('\n')
+                try:
+                    myElem = WebDriverWait(browser, timeOut).until(EC.presence_of_element_located((By.CLASS_NAME, 'jobDescriptionContent')))
+                    text = myElem.text.encode('utf-8').translate(None, exclude)
+                    descList.append(text)
+                    descList.append(',')
+                    outfile.writelines(descList)
+                    jobCount += 1
+                except TimeoutException:
+                    print TimeoutException
                 
-                descList.append(text)
-                descList.append(',')
-                jobCount += 1
+                descList = []
             
             browser.find_element_by_class_name('next').click()
         except Exception as e:
@@ -96,9 +109,6 @@ def searchJobs(keyword, location, browser):
     
     browser.quit()
     #write the description data into one file
-    print("Writing...")
-    outfile = open(filename, "wb")
-    outfile.writelines(descList)
     outfile.close()
     print("Write complete.")
     return jobCount
@@ -155,12 +165,42 @@ def displayStats(nJobs):
     print "Total Jobs Found: " + str(nJobs) + "\n"
 
     #Seaborn bar chart
+    kw_map = {}
     df = pd.DataFrame({'keyword': keyword_dict.keys(), 'occurences': keyword_dict.values()})
-    df = df.sort_values(by=['occurences'], ascending=False)
+    df = df.sort_values(by = ['occurences'], ascending = False)
     sns.set_style("whitegrid")
-    ax = sns.barplot(x='keyword', y='occurences', data=df)
+    '''
+    ax = sns.barplot(x = 'keyword', y = 'occurences', data = df)
+    ax.set_xticklabels(df['keyword'], rotation = 0)
     fig = ax.get_figure()
-    fig.savefig('plots/plot.png')
+    fig.savefig('plots/occurrence_bar_plot.png')
+    '''
+    df.rename(columns = {'occurences': 'percent_occurrence'}, inplace = True)
+    #df['percent_occurrence'] = [round((float(x) / float(nJobs)) * 100, 2) for x in df['percent_occurrence']]
+    #percs = [round((float(x) / float(nJobs)) * 100, 2) for x in df['percent_occurrence']]
+    percs = []
+    for item in df['percent_occurrence']:
+        percs.append(str(round((float(item) / nJobs) * 100.0, 2)) + "%") 
+
+    ax2 = sns.barplot(x = 'keyword', y = 'percent_occurrence', data = df)
+    ax2.set_ylabel('Number of Occurences')
+    xlabs = []
+
+    count = 0
+    for p in ax2.patches:
+        ax2.text(p.get_x()+p.get_width()/2.,
+                p.get_height() + 3,
+                '{:s}'.format(percs[count]),
+                ha="center") 
+        count += 1
+
+    for lab in df['keyword']:
+        xlabs.append(lab)
+
+    ax2.set_xticklabels(xlabs, rotation = 17)
+    fig = ax2.get_figure()
+    fig.savefig('plots/occurrence_bar_plot.png')
+
     plt.show()
     
 
@@ -169,12 +209,11 @@ def main():
     url = "https://www.glassdoor.com/index.htm"
     keyword = 'software engineer'
     location = 'Raleigh, NC'
+    #browser = initBrowser()
+    #browser.get(url)
 
-    browser = initBrowser()
-    browser.get(url)
-
-    nJobs = searchJobs(keyword, location, browser)
-    #nJobs = 30
+    #nJobs = searchJobs(keyword, location, browser)
+    nJobs = 898
     parseData()
     displayStats(nJobs)
 
